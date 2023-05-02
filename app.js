@@ -3,10 +3,12 @@ const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
 const User = require("./model");
+const cors = require("cors");
 
 // Parse JSON and url-encoded request bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 const accountSid = "ACeb57428dadd77cdfa851714c8270d092";
 const authToken = "c48c70d64e30dd089303e6641210c171";
@@ -86,6 +88,6 @@ app.post("/otp", (req, res) => {
 });
 
 // Start server
-app.listen(3000, () => {
-  console.log("Server listening on port 3000");
+app.listen(4000, () => {
+  console.log("Server listening on port 4000");
 });

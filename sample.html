@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Phone Number Input</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f1f1f1;
+        color: #000;
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 20px;
+      }
+      .phone {
+        padding: 14px;
+        font-size: 18px;
+        border: none;
+        border-radius: 50px;
+        width: 400px;
+        background-color: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: #fff;
+        margin-right: 10px;
+        -webkit-appearance: none;
+        text-align: left;
+      }
+      .phone:focus {
+        outline: none;
+        color: #fff;
+      }
+      .phone::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .btn {
+        padding: 13px 20px;
+        background-color: transparent;
+        color: #fff;
+        font-size: 18px;
+        border: 2px solid #ffcc00;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+      }
+      .btn:hover {
+        background-color: #ffcc00;
+        color: #000;
+        border-color: #ffcc00;
+        box-shadow: 0px 0px 5px #ffcc00;
+      }
+      .btn::after {
+        content: "\2192";
+        margin-left: 5px;
+        transition: all 0.3s ease-in-out;
+      }
+      .btn:hover::after {
+        margin-left: 10px;
+      }
+      .placeholder {
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="phone-input-container">
+        <input
+          type="tel"
+          placeholder="Phone Number"
+          class="phone"
+          id="phone-input"
+        />
+        <button class="btn" id="send-otp-btn">Send OTP</button>
+      </div>
+      <div id="otp-input-container" style="display: none">
+        <input type="number" placeholder="OTP" class="otp" id="otp-input" />
+        <button class="btn" id="verify-otp-btn">Verify OTP</button>
+      </div>
+    </div>
+
+    <div id="message-container"></div>
+
+    <script>
+      const phoneInput = document.getElementById("phone-input");
+      const sendOtpBtn = document.getElementById("send-otp-btn");
+      const otpInput = document.getElementById("otp-input");
+      const verifyOtpBtn = document.getElementById("verify-otp-btn");
+      const messageContainer = document.getElementById("message-container");
+      const phoneInputContainer = document.getElementById(
+        "phone-input-container"
+      );
+      const otpInputContainer = document.getElementById("otp-input-container");
+
+      sendOtpBtn.addEventListener("click", () => {
+        const phoneNumber = phoneInput.value;
+        fetch("https://plugg-otp-auth.onrender.com/phone", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phoneNumber: phoneNumber }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            messageContainer.innerHTML = data.message;
+            if (data.message === "OTP Sent") {
+              phoneInputContainer.style.display = "none";
+              otpInputContainer.style.display = "block";
+            }
+          })
+          .catch((error) => console.error(error));
+      });
+
+      verifyOtpBtn.addEventListener("click", () => {
+        const phoneNumber = phoneInput.value;
+        const otpCode = otpInput.value;
+        fetch("https://plugg-otp-auth.onrender.com/otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phoneNumber: phoneNumber, otpCode: otpCode }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            messageContainer.innerHTML = data.message;
+            if (data.message === "Phone number verified and saved") {
+              otpInputContainer.style.display = "none";
+            }
+          })
+          .catch((error) => console.error(error));
+      });
+
+      phoneInput.addEventListener("focus", () => {
+        phoneInput.style.backgroundColor = "#fff";
+      });
+
+      phoneInput.addEventListener("blur", () => {
+        phoneInput.style.backgroundColor = "transparent";
+      });
+    </script>
+  </body>
+</html>
