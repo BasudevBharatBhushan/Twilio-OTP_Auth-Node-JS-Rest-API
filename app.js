@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
@@ -10,9 +11,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-const accountSid = "ACeb57428dadd77cdfa851714c8270d092";
-const authToken = "c48c70d64e30dd089303e6641210c171";
-const verifySid = "VAee80d19256770110e873815e93c20597";
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const verifySid = process.env.TWILIO_VERIFY_SID;
 const client = require("twilio")(accountSid, authToken);
 
 mongoose
@@ -39,6 +40,7 @@ app.post("/phone", async (req, res) => {
   const user = await User.findOne({ phone_number: phoneNumber });
   if (user) {
     res.json({ message: "You have already registered" });
+    // res.redirect("http://localhost:3000/registered");
     return;
   }
 
